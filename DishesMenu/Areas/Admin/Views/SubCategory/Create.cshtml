@@ -1,0 +1,118 @@
+﻿@model DishesMenu.Models.ViewModels.SubCategoryAndCategoryViewModel
+@using DishesMenu.Extensions
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Create Sub Category</h2>
+<br />
+<!--
+    We created at the top SubCategoryController:
+        [TempData]
+        public string StatusMessage { get; set; }
+
+    it's a property we use through methods to display Error Message
+
+    To use this status message we first copied the shared file _StatusMessage from:
+        Identity -> Pages -> Account -> Manage -> _StatusMessage.cshtml
+
+    and paste it in our Main Views:
+        Views -> Shared
+-->
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="border backgroundWhite row">
+
+    <div class="col-8 border-right">
+        <form asp-action="Create">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <!--  -->
+                    <select id="ddlCategorylist" asp-for="SubCategory.CategoryId"
+                            asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryId)"
+                            class="form-control"></select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" />
+                </div>
+                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_CreateAndBackToListButton" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-3 offset-1">
+        @if (Model.SubCategoryList.Count() > 0)
+        {
+            <p> Existing Subcategories: </p>
+
+            <div id="SubCategoryList">
+                <ul class="list-group"></ul>
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts{
+    <!--
+        In Views -> Shared we have _ValidationScriptsPartial.cshtml
+        this partial view provides a reference to jQuery validation script
+        and when Edit and Create pages are edit we will using this _ValidationScriptsPartial
+    -->
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- and after that we add our script -->
+    <script>
+
+        /*
+            this function needs to be call two times
+            one: when will see the document is ready, the document is loaded
+        */
+        function updateSubCategoryList() {
+            var categorySelected = document.getElementById("ddlCategorylist").value;
+            $list = $('#SubCategoryList');
+            $.ajax({
+                url: '/Admin/SubCategory/GetSubCategory/' + categorySelected,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    results = JSON.parse(data);
+                    $list.html('');
+                    $list.append(' <ul class="list-group"> ');
+                    for (i in results) {
+                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                    }
+                    $list.append('</ul>');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            updateSubCategoryList();
+        });
+        $("#ddlCategorylist").on("change", function () {
+            updateSubCategoryList();
+        });
+    </script>
+}

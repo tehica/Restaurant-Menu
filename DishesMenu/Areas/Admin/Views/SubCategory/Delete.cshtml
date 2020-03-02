@@ -1,0 +1,45 @@
+﻿@model DishesMenu.Models.SubCategory
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Sub Category Delete</h2>
+<br />
+
+<form method="post">
+    <div class="border backgroundWhite">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Name" disabled class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Name" disabled class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Category.Name" disabled class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Category.Name" disabled class="form-control" />
+            </div>
+        </div>
+
+
+        <br />
+
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_DeleteAndBackToListButton" model="Model.Id" />
+            </div>
+        </div>
+
+    </div>
+</form>
